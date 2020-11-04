@@ -1,6 +1,7 @@
 from django.conf import settings
-from django.core import mail
 from django.contrib.auth.models import User
+from django.core import mail
+from django.urls import reverse
 from django.utils import timezone
 
 from oauthlib.common import generate_token
@@ -16,9 +17,11 @@ def send_activation_mail(user):
 
     from_email = 'Account Activation <{settings.EMAIL_HOST_USER}>'
     auth_token = AccessToken.objects.get(user=user)
+    activation_url = reverse('api:v1:user-activate')
     body = f'''
         Hi, thank you for signing up on our app.
-        Here is your auth token activate your account {auth_token}
+        Here is your auth token activate your account {auth_token}.
+        Activate your account here: {settings.SITE_URL}{activation_url}
         Thanks. 
         The App Team.
     '''
