@@ -10,34 +10,73 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
 
+import json
 from pathlib import Path
 
+from django.core.exceptions import ImproperlyConfigured
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+
+try:
+    with open(BASE_DIR / 'keys.json', 'r') as fh:
+        keys = json.loads(fh.read())
+        fh.close()
+except FileNotFoundError:
+    msg = 'Configure keys.json in the settings folder'
+    raise ImproperlyConfigured(msg)
+except ValueError as err:
+    raise err
 
 
+def get_key(key, keys=keys):
+    """Retrieve a configuration key value from a key dictionary
+    :param key: Settings config dictionary key
+    :type key: str
+    :param keys: Key dictionary.
+        Default: Values from keys.json as dictionary
+    :type keys: dict
+    :returns: Value from a key dictionary
+    """
+    try:
+        return keys[key]
+    except KeyError:
+        raise ImproperlyConfigured(
+            'Set the "{key}" setting in keys.json '
+            'or the keys dictionary you provided'
+        )
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '@zm9bk%*0=+0-s!-)zvg0e$dn!s%3ww(_72hl60nwj+2qrjq&d'
+SECRET_KEY = get_key('SECRET_KEY') 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = []
 
 
 # Application definition
 
-INSTALLED_APPS = [
+DJANGO_APPS = [
     'django.contrib.admin',
-    'django.contrib.auth',
-    'django.contrib.contenttypes',
+    'django.contrib.auth', 'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
 ]
+
+THIRD_PARTY_APPS = [
+    'rest_framework',
+    'oauth2_provider',
+]
+
+LOCAL_APPS = [
+    'api',
+]
+
+INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -79,7 +118,25 @@ DATABASES = {
         'NAME': BASE_DIR / 'db.sqlite3',
     }
 }
+########## EMAIL CONFIGURATION
+# See: https://docs.djangoproject.com/en/dev/topics/email/#smtp-backend
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host-user
+EMAIL_HOST_USER = get_key('EMAIL_HOST_USER')
+
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host-password
+EMAIL_HOST_PASSWORD = get_key('EMAIL_HOST_PASSWORD')
+
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-host
+EMAIL_HOST = 'smtp.gmail.com'
+
+# See: https://docs.djangoproject.com/en/dev/ref/settings/#email-port
+EMAIL_PORT = 587
+
+EMAIL_USE_TLS = True
+
+DEFAULT_FROM_EMAIL  = get_key('EMAIL_HOST_USER')
 
 # Password validation
 # https://docs.djangoproject.com/en/3.1/ref/settings/#auth-password-validators
@@ -118,3 +175,14 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    )
+}
+
+OAUTH2_PROVIDER = {
+    'SCOPES': {'read': 'Read scope'},
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 360000,
+} 
