@@ -9,7 +9,6 @@ from rest_framework.response import Response
 from oauth2_provider.models import AccessToken
 
 from api.v1.serializers import UserCreateSerializer
-from api.v1.serializers import UserLoginSerializer
 from api.v1.serializers import UserPartialSerializer
 from api.v1.serializers import UserSerializer
 from core.permissions import IsOwnerOrReadOnly
@@ -78,30 +77,3 @@ class UserViewSet(viewsets.ModelViewSet):
         if password:
             serializer.instance.set_password(password)
         return super().perform_create(serializer)
-
-    @action(detail=False, methods=['post'])
-    def login(self, request):
-        '''
-        Resource:
-        api/v1/users/login/
-        User login. After authentication, the user is logged in and
-        a bearer token is given.
-        '''
-        serializer = UserLoginSerializer(data=request.data)
-        if serializer.is_valid():
-            user = authenticate(
-                username=serializer.data['email'],
-                password=request.data['password']
-            )
-            if user:
-                token = AccessToken.objects.get(user=user).token
-                return Response({'token': token}, status=status.HTTP_200_OK)
-            return Response(
-                {'message': 'Invalid email/password or inactive account'},
-                status=status.HTTP_401_UNAUTHORIZED
-            )
-        else:
-            return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
-            )
