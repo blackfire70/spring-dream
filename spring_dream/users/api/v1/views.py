@@ -1,6 +1,6 @@
-from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from django.db import transaction
+from django.contrib.auth.models import User
 
 from rest_framework import status
 from rest_framework import viewsets
@@ -8,9 +8,9 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from oauth2_provider.models import AccessToken
 
-from api.v1.serializers import UserCreateSerializer
-from api.v1.serializers import UserPartialSerializer
-from api.v1.serializers import UserSerializer
+from .serializers import UserCreateSerializer
+from .serializers import UserPartialSerializer
+from .serializers import UserSerializer
 from core.permissions import IsOwnerOrReadOnly
 from core.utils import create_application
 from core.utils import create_token

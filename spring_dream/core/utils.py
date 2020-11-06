@@ -17,7 +17,7 @@ def send_activation_mail(user):
 
     from_email = 'Account Activation <{settings.EMAIL_HOST_USER}>'
     auth_token = AccessToken.objects.get(user=user)
-    activation_url = reverse('api:v1:user-detail', kwargs={'pk': user.id})
+    activation_url = reverse('api:users-v1:user-detail', kwargs={'pk': user.id})
     body = f'''
         Hi, thank you for signing up on our app.
         Here is your auth token activate your account {auth_token}.

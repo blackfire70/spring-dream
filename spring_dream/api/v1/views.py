@@ -2,7 +2,7 @@ from oauth2_provider.models import AccessToken
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework.response import Response
 
-from api.v1.serializers import LoginSerializer
+from .serializers import LoginSerializer
 
 class CustomOAuth2Token(ObtainAuthToken):
 
