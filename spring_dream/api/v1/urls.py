@@ -1,6 +1,6 @@
 from django.urls import path
 
-from api.v1.views.auth import CustomOAuth2Token
+from api.v1.views import CustomOAuth2Token
 
 
 urlpatterns = [
