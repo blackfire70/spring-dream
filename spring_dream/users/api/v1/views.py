@@ -1,6 +1,6 @@
 from django.contrib.auth import authenticate
+from django.contrib.auth import get_user_model
 from django.db import transaction
-from django.contrib.auth.models import User
 
 from rest_framework import status
 from rest_framework import viewsets
@@ -15,6 +15,8 @@ from core.permissions import IsOwnerOrReadOnly
 from core.utils import create_application
 from core.utils import create_token
 from core.utils import send_activation_mail
+
+User = get_user_model()
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -53,14 +55,12 @@ class UserViewSet(viewsets.ModelViewSet):
         )
 
     def perform_create(self, serializer):
-        # Populate username field with email
-        serializer.validated_data['username'] = serializer.validated_data[
-            'email']
         serializer.validated_data['is_active'] = False
         serializer.save()
         # Create app and access token for the user
         user = serializer.instance
         user.set_password(serializer.initial_data['password'])
+        user.save()
         app = create_application(user)
         create_token(user, app)
         transaction.on_commit(lambda: send_activation_mail(user=user))
