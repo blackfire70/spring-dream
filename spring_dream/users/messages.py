@@ -1,9 +1,9 @@
 from django.conf import settings
 from django.urls import reverse
-from core.messages import EmailMessageBase
 
 from oauth2_provider.models import AccessToken
 
+from core.messages import EmailMessageBase
 
 class AccountActivationEmail(EmailMessageBase):
 
