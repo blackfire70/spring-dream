@@ -80,6 +80,10 @@ LOCAL_APPS = [
 
 INSTALLED_APPS = DJANGO_APPS + THIRD_PARTY_APPS + LOCAL_APPS
 
+AUTH_USER_MODEL = 'users.User'
+
+#AUTHENTICATION_BACKENDS = ['users.backends.UserBackend']
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -117,7 +121,7 @@ WSGI_APPLICATION = 'spring_dream.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db2.sqlite3',
+        'NAME': BASE_DIR / 'db3.sqlite3',
     }
 }
 ########## EMAIL CONFIGURATION
