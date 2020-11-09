@@ -6,7 +6,9 @@ from .serializers import LoginSerializer
 
 
 class CustomOAuth2Token(ObtainAuthToken):
-
+    """
+    Custom Login view that returns Oauth2 Access Token.
+    """
     serializer_class = LoginSerializer
 
     def post(self, request, *args, **kwargs):
