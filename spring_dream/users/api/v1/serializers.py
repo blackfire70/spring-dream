@@ -12,12 +12,18 @@ class UserCreateSerializer(serializers.ModelSerializer):
         required=True
     )
     is_active = serializers.BooleanField(read_only=True, default=False)
-    email = serializers.EmailField(validators=[UniqueValidator(queryset=get_user_model().objects.all())])
+    email = serializers.EmailField(validators=[
+        UniqueValidator(queryset=get_user_model().objects.all())])
 
     class Meta:
         model = get_user_model()
-        fields = ['email', 'password', 'first_name', 'last_name', 'is_active', ]
-
+        fields = [
+            'email',
+            'password',
+            'first_name',
+            'last_name',
+            'is_active',
+        ]
 
 
 class UserPartialSerializer(serializers.ModelSerializer):
