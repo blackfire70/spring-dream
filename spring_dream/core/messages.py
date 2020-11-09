@@ -3,15 +3,17 @@ from django.core.mail import EmailMultiAlternatives
 
 
 class EmailMessageBase(object):
-
+    """
+    Base class for email messaging. 
+    """
     html_template = ''
     txt_template = ''
-    recipient = None
+    recipients = []
     from_email = ''
     subject = ''
 
-    def __init__(self, recipient, *args, **kwargs):
-        self.recipient = recipient
+    def __init__(self, recipients, *args, **kwargs):
+        self.recipients = recipients
 
     def get_context_data(self):
         return {}
@@ -26,7 +28,7 @@ class EmailMessageBase(object):
             self.subject,
             body,
             self.from_email,
-            [self.recipient],
+            self.recipients,
         )
         email.attach_alternative(html_body, "text/html")
         email.send()

@@ -12,15 +12,17 @@ class AccountActivationEmail(EmailMessageBase):
     html_template = 'users/emails/account_activation.html'
     from_email = 'Account Activation <{settings.EMAIL_HOST_USER}>'
 
-    def __init__(self, recipient, user, *args, **kwargs):
-        self.recipient = recipient
+    def __init__(self, recipients, user, *args, **kwargs):
+        self.recipients = recipients
         self.user = user
 
     def get_context_data(self):
         context_data = {}
-        context_data['auth_token'] = AccessToken.objects.get(user=self.user)
+        # The user's password's hash will be used as a token
+        algo, salt, p_hash = self.user.password.split('$', 2)
+        context_data['auth_token'] = p_hash
         detail_url = reverse(
-            'api:users-v1:user-detail', kwargs={'pk': self.user.id})
+            'api:users-v1:user-activate', kwargs={'pk': self.user.id})
         context_data['activation_url'] = (
             f'{settings.SITE_URL}{detail_url}'
         )

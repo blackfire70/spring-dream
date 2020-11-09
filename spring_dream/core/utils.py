@@ -13,7 +13,7 @@ def send_activation_mail(user):
         Sends an activation email to the user
         param user: User instance
     '''
-    AccountActivationEmail(user.email, user).send()
+    AccountActivationEmail([user.email], user).send()
 
 
 def create_token(user, app):
