@@ -3,6 +3,8 @@ from django.db import transaction
 
 from rest_framework import status
 from rest_framework import viewsets
+from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 
 from .serializers import UserCreateSerializer
@@ -18,8 +20,7 @@ User = get_user_model()
 
 class UserViewSet(viewsets.ModelViewSet):
     """
-    User ViewSet
-    Contains all the operations to the model User
+    Contains all the operations to the model User.
     """
 
     model = User
@@ -30,7 +31,7 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         """
         Returns a different serializer depending
-        if the user is authenticated or not
+        if the user is authenticated or not.
         """
         if self.request.auth and self.request.user.is_active:
             serializer = self.serializer_class
@@ -68,9 +69,33 @@ class UserViewSet(viewsets.ModelViewSet):
 
     def perform_update(self, serializer):
         """
-        Support password change on PATCH
+        Support password change on PATCH.
         """
         password = serializer.initial_data.get('password')
         if password:
             serializer.instance.set_password(password)
         return super().perform_create(serializer)
+
+    @action(detail=True, methods=['post'], permission_classes=[AllowAny])
+    def activate(self, request, pk=None):
+        """
+        Resource:
+        api/v1/users/<pk>/activate/
+        Sets the user's is_active = True after validation of the token.
+        """
+        user = User.objects.get(id=pk)
+        token = request.data.get('token')
+        token = token.replace(' ', '+')
+        algo, salt, p_hash = user.password.split('$', 2)
+        if token == p_hash:
+            user.is_active = True
+            user.save()
+            return Response(
+                {'message': 'account activated'},
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {'message': 'invalid token'},
+                status=status.HTTP_401_UNAUTHORIZED
+            )
