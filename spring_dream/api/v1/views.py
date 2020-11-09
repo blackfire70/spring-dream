@@ -4,6 +4,7 @@ from rest_framework.response import Response
 
 from .serializers import LoginSerializer
 
+
 class CustomOAuth2Token(ObtainAuthToken):
 
     serializer_class = LoginSerializer
