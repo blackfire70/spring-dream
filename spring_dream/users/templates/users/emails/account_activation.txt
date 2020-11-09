@@ -1,0 +1,6 @@
+
+Hi, thank you for signing up on our app. \n
+Here is your auth token activate your account {{ auth_token }}.\n
+Activate your account here: {{ activation_url }}\n
+Thanks. \n
+The App Team.\n
