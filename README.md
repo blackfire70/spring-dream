@@ -3,6 +3,9 @@ Django REST API Backend
 
 ### Setup
 Edit and copy keys.json.sample into keys.json
+
+Run these commands:
+
 `$ pip install -r requirements.txt`
 
 
@@ -17,10 +20,10 @@ Edit and copy keys.json.sample into keys.json
 `POST /api/v1/users/`
 
 ### User activation endpoint
-`PATCH /api/v1/users/`
+`PATCH /api/v1/users/<pk>/`
 
 ### Change password endpoint
-`PATCH /api/v1/users/`
+`PATCH /api/v1/users/<pk>/`
 
 ### Login
 `POST /api/v1/api-token-auth/`
